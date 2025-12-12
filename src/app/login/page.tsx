@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,6 +8,18 @@ import { api } from "@/lib/api";
 import { Loader2 } from "lucide-react";
 
 export default function LoginPage() {
+     return (
+          <Suspense fallback={
+               <div className="container mx-auto px-4 py-32 flex items-center justify-center min-h-[60vh]">
+                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+               </div>
+          }>
+               <LoginForm />
+          </Suspense>
+     );
+}
+
+function LoginForm() {
      const [nim, setNim] = useState("");
      const [password, setPassword] = useState("");
      const [error, setError] = useState("");
