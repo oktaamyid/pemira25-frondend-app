@@ -33,6 +33,8 @@ export default function CandidateCard({ candidate }: { candidate: Candidate }) {
                                    src={candidate.president.photo}
                                    alt={candidate.president.name}
                                    fill
+                                   loading="eager"
+                                   sizes=""
                                    className="object-cover"
                               />
                               <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-3">
@@ -45,6 +47,7 @@ export default function CandidateCard({ candidate }: { candidate: Candidate }) {
                                    src={candidate.vicePresident.photo}
                                    alt={candidate.vicePresident.name}
                                    fill
+                                   loading="eager"
                                    className="object-cover"
                               />
                               <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-3">

@@ -34,8 +34,8 @@ export const api = {
           return data;
      },
 
-     getCandidates: async () => {
-          const res = await fetch(`${API_URL}/candidates`);
+     getCandidates: async (options?: RequestInit) => {
+          const res = await fetch(`${API_URL}/candidates`, options);
           if (!res.ok) throw new Error('Failed to fetch candidates');
           return res.json(); // Returns array
      },
@@ -66,14 +66,14 @@ export const api = {
           return res.json();
      },
 
-     getStats: async () => {
-          const res = await fetch(`${API_URL}/votes/stats`);
+     getStats: async (options?: RequestInit) => {
+          const res = await fetch(`${API_URL}/votes/stats`, options);
           if (!res.ok) throw new Error('Failed to fetch stats');
           return res.json();
      },
 
-     getResults: async () => {
-          const res = await fetch(`${API_URL}/votes/results`);
+     getResults: async (options?: RequestInit) => {
+          const res = await fetch(`${API_URL}/votes/results`, options);
           if (!res.ok) throw new Error('Failed to fetch results');
           return res.json();
      }

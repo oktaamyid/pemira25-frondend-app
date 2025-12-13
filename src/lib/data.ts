@@ -3,7 +3,7 @@ export const candidates = [
   {
     id: 1,
     president: {
-      name: "Budi Santoso",
+      name: "Budi",
       photo: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8YXZhdGFyfGVufDB8fDB8fHww",
       major: "Teknik Informatika",
       batch: "2022"
@@ -50,16 +50,4 @@ export const timeline = [
   { date: "11 - 17 Des 2025", event: "Kampanye Terbuka" },
   { date: "18 Des 2025", event: "Debat Kandidat" },
   { date: "20 Des 2025", event: "Pemungutan Suara" },
-];
-
-export const stats = {
-  totalVoters: 1250,
-  votesCast: 876,
-  turnout: "70.08%"
-};
-
-export const initialResults = [
-  { name: "Paslon 01", votes: 450, fill: "#3b82f6" },
-  { name: "Paslon 02", votes: 380, fill: "#ef4444" },
-  { name: "Abstain", votes: 46, fill: "#9ca3af" }
 ];
