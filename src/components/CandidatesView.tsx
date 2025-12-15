@@ -18,13 +18,14 @@ export default function CandidatesView({ candidatesData }: { candidatesData: any
                     </p>
                </motion.div>
 
-               <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+               <div className="flex flex-wrap justify-center gap-8 max-w-5xl mx-auto">
                     {candidatesData.map((candidate, index) => (
                          <motion.div
                               key={candidate.id}
                               initial={{ opacity: 0, y: 20 }}
                               animate={{ opacity: 1, y: 0 }}
                               transition={{ delay: index * 0.2 }}
+                              className="w-full max-w-[320px]"
                          >
                               <CandidateCard candidate={candidate} />
                          </motion.div>

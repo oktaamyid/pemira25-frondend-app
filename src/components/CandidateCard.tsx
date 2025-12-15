@@ -26,33 +26,25 @@ export default function CandidateCard({ candidate }: { candidate: Candidate }) {
                whileHover={{ y: -5 }}
                transition={{ duration: 0.3 }}
           >
-               <Card className="overflow-hidden border-none shadow-xl shadow-slate-200/50 bg-surface rounded-2xl h-full flex flex-col">
-                    <div className="grid grid-cols-2 gap-0.5 bg-neutral-cream">
-                         <div className="relative aspect-4/5">
-                              <Image
-                                   src={candidate.president.photo}
-                                   alt={candidate.president.name}
-                                   fill
-                                   loading="eager"
-                                   sizes=""
-                                   className="object-cover"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-3">
-                                   <p className="text-white font-bold text-sm truncate">{candidate.president.name}</p>
-                                   <p className="text-white/80 text-xs">Ketua</p>
-                              </div>
-                         </div>
-                         <div className="relative aspect-4/5">
-                              <Image
-                                   src={candidate.vicePresident.photo}
-                                   alt={candidate.vicePresident.name}
-                                   fill
-                                   loading="eager"
-                                   className="object-cover"
-                              />
-                              <div className="absolute bottom-0 left-0 right-0 bg-linear-to-t from-black/60 to-transparent p-3">
-                                   <p className="text-white font-bold text-sm truncate">{candidate.vicePresident.name}</p>
-                                   <p className="text-white/80 text-xs">Wakil</p>
+               <Card className="overflow-hidden max-w-[320px] border-none shadow-xl shadow-slate-200/50 bg-surface rounded-2xl h-full flex flex-col">
+                    <div className="relative aspect-4/5 bg-neutral-cream w-full overflow-hidden group-hover:scale-105 transition-transform duration-500">
+                         <Image
+                              src={candidate.president.photo}
+                              alt={`Pasangan Calon ${candidate.id}`}
+                              fill
+                              loading="eager"
+                              className="object-cover"
+                         />
+                         <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/50 to-transparent p-4 pt-24 text-white">
+                              <div className="flex justify-between items-end gap-4">
+                                   <div className="text-left flex-1 min-w-0">
+                                        <p className="text-white/80 text-[10px] uppercase font-medium mb-0.5">Ketua</p>
+                                        <p className="font-bold text-sm leading-tight truncate">{candidate.president.name}</p>
+                                   </div>
+                                   <div className="text-right flex-1 min-w-0">
+                                        <p className="text-white/80 text-[10px] uppercase font-medium mb-0.5">Wakil</p>
+                                        <p className="font-bold text-sm leading-tight truncate">{candidate.vicePresident.name}</p>
+                                   </div>
                               </div>
                          </div>
                     </div>

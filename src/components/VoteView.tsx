@@ -9,21 +9,29 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { api } from "@/lib/api";
-import { CheckCircle2, Loader2, Mail, Lock } from "lucide-react";
+import { CheckCircle2, Loader2, Mail, Lock, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { OtpInput } from "@/components/ui/otp-input";
+import {
+     Dialog,
+     DialogContent,
+     DialogDescription,
+     DialogHeader,
+     DialogTitle,
+     DialogTrigger,
+} from "@/components/ui/dialog";
 
 interface Candidate {
      id: number | string;
      name: string;
-     photo_url: string;
-     order_number: number;
+     photoUrl: string;
+     orderNumber: number;
      vision: string;
      mission: string;
 }
 
-type AuthStage = 'check_auth' | 'email_input' | 'otp_input' | 'voting' | 'voted';
+type AuthStage = 'check_auth' | 'email_input' | 'otp_input' | 'manual_otp' | 'voting' | 'voted';
 
 export default function VoteView({ initialCandidates }: { initialCandidates: Candidate[] }) {
      const [candidates, setCandidates] = useState<Candidate[]>(initialCandidates);
@@ -35,6 +43,7 @@ export default function VoteView({ initialCandidates }: { initialCandidates: Can
      const [authStage, setAuthStage] = useState<AuthStage>('check_auth');
      const [email, setEmail] = useState("");
      const [otp, setOtp] = useState("");
+     const [viewCandidate, setViewCandidate] = useState<Candidate | null>(null);
 
      useEffect(() => {
           const savedState = sessionStorage.getItem("voting_state");
@@ -212,6 +221,27 @@ export default function VoteView({ initialCandidates }: { initialCandidates: Can
                               <Button type="submit" className="w-full h-12 text-lg rounded-xl bg-primary hover:bg-primary-light" disabled={isSubmitting}>
                                    {isSubmitting ? <Loader2 className="animate-spin" /> : "Kirim Kode OTP"}
                               </Button>
+
+                              <div className="relative">
+                                   <div className="absolute inset-0 flex items-center">
+                                        <span className="w-full border-t border-slate-200" />
+                                   </div>
+                                   <div className="relative flex justify-center text-xs uppercase">
+                                        <span className="bg-white px-2 text-slate-500">Atau</span>
+                                   </div>
+                              </div>
+
+                              <Button
+                                   type="button"
+                                   variant="outline"
+                                   className="w-full h-12 rounded-xl border-slate-200 text-slate-600 hover:bg-slate-50"
+                                   onClick={() => {
+                                        setAuthStage('manual_otp');
+                                        setError("");
+                                   }}
+                              >
+                                   Sudah punya kode OTP?
+                              </Button>
                          </form>
                     </Card>
                </div>
@@ -271,20 +301,89 @@ export default function VoteView({ initialCandidates }: { initialCandidates: Can
           );
      }
 
+     if (authStage === 'manual_otp') {
+          return (
+               <div className="container mx-auto px-4 py-32 flex items-center justify-center min-h-[80vh]">
+                    <Card className="max-w-md w-full p-8 rounded-3xl shadow-2xl bg-white/80 backdrop-blur-sm border-blue-50">
+                         <div className="text-center mb-8">
+                              <h1 className="text-2xl font-bold text-slate-900 mb-2">Verifikasi Manual</h1>
+                              <p className="text-slate-500">Masukkan email dan kode OTP yang anda miliki.</p>
+                         </div>
+
+                         <div className="space-y-6">
+                              <div className="space-y-2">
+                                   <label className="text-sm font-medium text-slate-700 ml-1">Email</label>
+                                   <div className="relative">
+                                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
+                                        <input
+                                             type="email"
+                                             placeholder="nim@student.nurulfikri.ac.id"
+                                             required
+                                             className="w-full h-12 pl-12 pr-4 rounded-xl border border-slate-200 focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all"
+                                             value={email}
+                                             onChange={(e) => setEmail(e.target.value)}
+                                        />
+                                   </div>
+                              </div>
+
+                              <div className="space-y-2">
+                                   <label className="text-sm font-medium text-slate-700 ml-1">Kode OTP</label>
+                                   <div className="flex justify-center">
+                                        <OtpInput
+                                             length={6}
+                                             value={otp}
+                                             onChange={(val) => {
+                                                  setOtp(val);
+                                                  if (error) setError("");
+                                             }}
+                                             onComplete={(val) => {
+                                             }}
+                                             disabled={isSubmitting}
+                                        />
+                                   </div>
+                              </div>
+
+                              {error && <p className="text-red-500 text-sm text-center bg-red-50 p-2 rounded-lg">{error}</p>}
+
+                              <Button
+                                   onClick={(e) => handleVerifyOtp(e)}
+                                   className="w-full h-12 text-lg rounded-xl bg-primary hover:bg-primary-light"
+                                   disabled={isSubmitting || !email || otp.length !== 6}
+                              >
+                                   {isSubmitting ? <Loader2 className="animate-spin" /> : "Verifikasi"}
+                              </Button>
+
+                              <Button
+                                   type="button"
+                                   variant="ghost"
+                                   className="w-full h-12 rounded-xl text-slate-600 hover:bg-slate-50"
+                                   onClick={() => {
+                                        setAuthStage('email_input');
+                                        setError("");
+                                   }}
+                              >
+                                   Kembali
+                              </Button>
+                         </div>
+                    </Card>
+               </div>
+          );
+     }
+
      return (
-          <div className="container mx-auto px-4 py-24 pb-32">
+          <div className="container mx-auto px-4 py-6 pb-20 md:py-10 md:pb-32">
                <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center mb-16"
+                    className="text-center mb-10"
                >
-                    <h1 className="text-4xl font-bold mb-6 text-slate-900">Bilik Suara Digital</h1>
+                    <h1 className="text-2xl md:text-4xl font-bold mb-2 text-slate-900">Bilik Suara Digital</h1>
                     <p className="text-neutral-slate text-lg">
                          Silakan pilih salah satu pasangan calon di bawah ini.
                     </p>
                </motion.div>
 
-               <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-12">
+               <div className="flex flex-wrap justify-center gap-4 md:gap-8 max-w-5xl mx-auto mb-12">
                     {candidates.map((candidate) => (
                          <motion.div
                               key={candidate.id}
@@ -292,34 +391,68 @@ export default function VoteView({ initialCandidates }: { initialCandidates: Can
                               whileTap={{ scale: 0.98 }}
                               onClick={() => setSelectedId(candidate.id)}
                               className={cn(
-                                   "cursor-pointer transition-all duration-300 relative",
+                                   "w-full max-w-[320px] cursor-pointer transition-all duration-300 relative",
                                    selectedId === candidate.id ? "ring-4 ring-primary ring-offset-4 rounded-2xl" : "opacity-80 hover:opacity-100"
                               )}
                          >
-                              <Card className="overflow-hidden h-full border-none shadow-xl shadow-slate-200/50 rounded-2xl bg-surface">
-                                   <div className="relative aspect-video bg-neutral-cream w-full overflow-hidden">
+                              <Card className="overflow-hidden h-full border-none shadow-xl shadow-slate-200/50 rounded-2xl bg-surface group">
+                                   <div className="relative aspect-4/5 bg-neutral-cream w-full overflow-hidden">
                                         <Image
-                                             src={candidate.photo_url || "/placeholder.jpg"}
+                                             src={candidate.photoUrl || "https://placehold.co/800x1000/png"}
                                              alt={candidate.name}
                                              fill
-                                             className="object-cover"
+                                             className="object-cover transition-transform duration-500 group-hover:scale-105"
                                         />
-                                   </div>
-                                   <div className="p-6 text-center bg-surface">
-                                        <h3 className="font-bold text-xl text-slate-900">No. Urut {candidate.order_number}</h3>
-                                        <p className="text-lg font-semibold mt-2">{candidate.name}</p>
-                                        <p className="text-sm text-neutral-slate mt-2 italic line-clamp-2">{candidate.vision}</p>
+
+                                        {/* Order Number Badge */}
+                                        <div className="absolute top-4 left-4 z-20">
+                                             <div className="h-10 w-10 flex items-center justify-center rounded-full bg-white/90 backdrop-blur-sm shadow-lg text-primary font-bold text-xl border border-white/50">
+                                                  {candidate.orderNumber}
+                                             </div>
+                                        </div>
+
+                                        {/* Gradient & Names Overlay */}
+                                        <div className="absolute inset-x-0 bottom-0 bg-linear-to-t from-black/90 via-black/50 to-transparent p-5 pt-24 text-white">
+                                             <div className="flex justify-between items-end gap-4">
+                                                  <div className="text-left flex-1 min-w-0">
+                                                       <p className="text-white/80 text-[10px] uppercase font-medium mb-0.5">Ketua</p>
+                                                       <p className="font-bold text-sm leading-tight truncate">
+                                                            {candidate.name.split('&')[0]?.trim() || candidate.name}
+                                                       </p>
+                                                  </div>
+                                                  {candidate.name.includes('&') && (
+                                                       <div className="text-right flex-1 min-w-0">
+                                                            <p className="text-white/80 text-[10px] uppercase font-medium mb-0.5">Wakil</p>
+                                                            <p className="font-bold text-sm leading-tight truncate">
+                                                                 {candidate.name.split('&')[1]?.trim()}
+                                                            </p>
+                                                       </div>
+                                                  )}
+                                             </div>
+                                        </div>
                                    </div>
 
                                    {selectedId === candidate.id && (
                                         <motion.div
-                                             initial={{ opacity: 0 }}
-                                             animate={{ opacity: 1 }}
-                                             className="absolute top-4 right-4 bg-primary text-white p-2 rounded-full shadow-lg z-10"
+                                             initial={{ opacity: 0, scale: 0.5 }}
+                                             animate={{ opacity: 1, scale: 1 }}
+                                             className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-30 bg-primary text-white p-4 rounded-full shadow-2xl ring-4 ring-white/50"
                                         >
-                                             <CheckCircle2 className="h-6 w-6" />
+                                             <CheckCircle2 className="h-8 w-8" />
                                         </motion.div>
                                    )}
+
+                                   <Button
+                                        variant="secondary"
+                                        size="icon"
+                                        className="absolute top-4 right-4 z-20 rounded-full shadow-lg shadow-black/20 hover:scale-110 transition-transform bg-white text-primary hover:bg-slate-50 border border-slate-100"
+                                        onClick={(e) => {
+                                             e.stopPropagation();
+                                             setViewCandidate(candidate);
+                                        }}
+                                   >
+                                        <Info className="h-6 w-6" />
+                                   </Button>
                               </Card>
                          </motion.div>
                     ))}
@@ -335,13 +468,13 @@ export default function VoteView({ initialCandidates }: { initialCandidates: Can
                          >
                               <div className="container mx-auto max-w-xl bg-white/90 backdrop-blur-md p-4 rounded-full shadow-2xl border border-blue-100 flex items-center justify-between pl-8">
                                    <div className="text-sm font-medium text-slate-600">
-                                        Pilihan Anda: <span className="font-bold text-primary">No. {candidates.find(c => c.id === selectedId)?.order_number}</span>
+                                        Pilihan Anda: <span className="font-bold text-primary">No. {candidates.find(c => c.id === selectedId)?.orderNumber}</span>
                                    </div>
                                    <Button
                                         size="lg"
                                         disabled={isSubmitting}
                                         onClick={handleVote}
-                                        className="min-w-[140px] rounded-full bg-primary hover:bg-primary-light h-12"
+                                        className="min-w-35 rounded-full bg-primary hover:bg-primary-light h-12"
                                    >
                                         {isSubmitting ? (
                                              <>
@@ -356,6 +489,89 @@ export default function VoteView({ initialCandidates }: { initialCandidates: Can
                          </motion.div>
                     )}
                </AnimatePresence>
-          </div>
+
+               <Dialog open={!!viewCandidate} onOpenChange={(open) => !open && setViewCandidate(null)}>
+                    <DialogContent aria-description="" className="max-w-4xl max-h-[90vh] overflow-y-auto bg-white p-0 overflow-hidden rounded-2xl">
+                         <div className="grid md:grid-cols-2 h-full">
+                              {/* Left Column: Image & Basic Info */}
+                              <div className="relative bg-neutral-100 md:h-full h-[350px] md:h-full md:min-h-[400px]">
+                                   <Image
+                                        src={viewCandidate?.photoUrl || "https://placehold.co/800x1000/png"}
+                                        alt={viewCandidate?.name || "Candidate"}
+                                        fill
+                                        className="object-cover"
+                                   />
+                                   <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/50 to-transparent flex flex-col justify-end p-8 text-white">
+                                        <div className="inline-block self-start px-3 py-1 bg-primary rounded-full text-xs font-bold mb-4 shadow-lg border border-white/20">
+                                             Kandidat No. {viewCandidate?.orderNumber}
+                                        </div>
+
+                                        <div className="flex justify-between items-end gap-4 border-t border-white/20 pt-4">
+                                             <div className="text-left flex-1 min-w-0">
+                                                  <p className="text-white/80 text-xs uppercase font-medium mb-1">Ketua</p>
+                                                  <h2 className="text-xl font-bold leading-tight shadow-black drop-shadow-md">
+                                                       {viewCandidate?.name.split('&')[0]?.trim() || viewCandidate?.name}
+                                                  </h2>
+                                             </div>
+                                             {viewCandidate?.name.includes('&') && (
+                                                  <div className="text-right flex-1 min-w-0">
+                                                       <p className="text-white/80 text-xs uppercase font-medium mb-1">Wakil</p>
+                                                       <h2 className="text-xl font-bold leading-tight shadow-black drop-shadow-md">
+                                                            {viewCandidate?.name.split('&')[1]?.trim()}
+                                                       </h2>
+                                                  </div>
+                                             )}
+                                        </div>
+                                   </div>
+                              </div>
+
+                              {/* Right Column: Visi Misi */}
+                              <div className="p-8 flex flex-col h-full overflow-y-auto max-h-[60vh] md:max-h-[85vh]">
+                                   <DialogHeader className="mb-6">
+                                        <DialogTitle className="text-2xl font-bold text-slate-900 border-b pb-4">
+                                             Visi & Misi
+                                        </DialogTitle>
+                                   </DialogHeader>
+
+                                   <div className="space-y-6 grow">
+                                        <div className="bg-blue-50/50 p-5 rounded-2xl border border-blue-100">
+                                             <h4 className="font-bold text-primary mb-3 flex items-center gap-2 text-lg">
+                                                  <span className="p-1.5 bg-white rounded-lg shadow-sm"><CheckCircle2 className="w-4 h-4 text-primary" /></span>
+                                                  Visi
+                                             </h4>
+                                             <p className="text-slate-700 leading-relaxed whitespace-pre-line text-sm md:text-base">
+                                                  {viewCandidate?.vision}
+                                             </p>
+                                        </div>
+
+                                        <div className="bg-orange-50/50 p-5 rounded-2xl border border-orange-100">
+                                             <h4 className="font-bold text-secondary mb-3 flex items-center gap-2 text-lg">
+                                                  <span className="p-1.5 bg-white rounded-lg shadow-sm"><CheckCircle2 className="w-4 h-4 text-secondary" /></span>
+                                                  Misi
+                                             </h4>
+                                             <p className="text-slate-700 leading-relaxed whitespace-pre-line text-sm md:text-base">
+                                                  {viewCandidate?.mission}
+                                             </p>
+                                        </div>
+                                   </div>
+
+                                   <div className="pt-8 mt-auto sticky bottom-0 bg-white">
+                                        <Button
+                                             onClick={() => {
+                                                  if (viewCandidate) {
+                                                       setSelectedId(viewCandidate.id);
+                                                       setViewCandidate(null);
+                                                  }
+                                             }}
+                                             className="w-full h-12 text-lg rounded-xl font-bold bg-primary hover:bg-primary-light shadow-lg shadow-blue-200 transition-all hover:-translate-y-0.5"
+                                        >
+                                             Pilih Kandidat Ini
+                                        </Button>
+                                   </div>
+                              </div>
+                         </div>
+                    </DialogContent>
+               </Dialog>
+          </div >
      );
 }
