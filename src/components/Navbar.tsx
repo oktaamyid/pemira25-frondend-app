@@ -68,7 +68,7 @@ export default function Navbar() {
                     className="bg-white/80 backdrop-blur-md border border-white/20 shadow-lg rounded-full px-6 py-3 flex items-center gap-2 md:gap-8"
                >
                     <Link href="/" className="font-bold text-primary mr-2 md:mr-4 flex items-center gap-2">
-                         <Image src="/pemira-logo.png" alt="Logo" width={24} height={24} />
+                         <Image src="/pemira-logo.svg" alt="Logo" width={24} height={24} />
                          <span className="hidden md:inline">PEMIRA</span>
                     </Link>
 

@@ -29,6 +29,7 @@ export const metadata: Metadata = {
         "stt terpadu nurul fikri",
         "pemilihan raya sttnf 2025"
     ],
+    manifest: "/icons/site.webmanifest",
     openGraph: {
         title: metadataTitle,
         description: metadataDescription,

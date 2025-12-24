@@ -16,7 +16,7 @@ export default function LandingView({ stats }: { stats: { totalVoters: number; v
                <section id="hero" className="relative pt-8 pb-12 lg:pt-20 lg:pb-24 overflow-hidden">
                     {/* Background Pattern - Dot Grid */}
                     <div className="absolute inset-0 -z-10 h-full w-full bg-neutral-cream bg-[linear-gradient(to_right,#80808012_1px,transparent_1px),linear-gradient(to_bottom,#80808012_1px,transparent_1px)] bg-size-[24px_24px] mask-[radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
-
+                    {/* <div className="absolute inset-0 -z-10 h-full w-full bg-ur('/assets/bg-nf.png')"></div> */}
                     <div className="container mx-auto px-4 grid lg:grid-cols-2 gap-12 items-center">
                          {/* Left: Text Content */}
                          <motion.div
@@ -61,19 +61,17 @@ export default function LandingView({ stats }: { stats: { totalVoters: number; v
                               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-100 h-100 bg-primary/10 rounded-full blur-3xl -z-10" />
 
                               {/* Floating Logo */}
-                              <motion.div
-                                   animate={{ y: [0, -20, 0] }}
-                                   transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                                   className="relative z-20 w-80 h-80 md:w-96 md:h-96"
+                              <div
+                                   className="relative z-20 w-96 h-96 lg:w-125 lg:h-125"
                               >
                                    <Image
-                                        src="/pemira-logo.png"
+                                        src="/pemira-logo-text.svg"
                                         alt="Logo PEMIRA STTNF"
                                         fill
                                         className="object-contain drop-shadow-2xl"
                                         priority
                                    />
-                              </motion.div>
+                              </div>
                          </motion.div>
                     </div>
                </section>
